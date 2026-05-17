@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="red">#F00A2D</color>
+    <color name="green">#0AF021</color>
+
+    <!-- New Pleasing Palette -->
+    <color name="bg_dark">#241E24</color>
+    <color name="surface_dark">#2D272D</color>
+    <color name="purple_toolbar">#3B2F3B</color>
+    <color name="purple_accent">#BB86FC</color>
+    <color name="grey_text">#9F9FA8</color>
+
+    <!-- Keep legacy names but point to new palette for compatibility -->
+    <color name="purple_primary">#8A4DD0</color>
+    <color name="purple_dark">#693D9E</color>
+</resources>

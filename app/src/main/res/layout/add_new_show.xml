@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <com.iarcuschin.simpleratingbar.SimpleRatingBar
+        android:id="@+id/ratingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        app:srb_borderColor="#00FFC107"
+        app:srb_drawBorderEnabled="true"
+        app:srb_fillColor="#FFFFFF"
+        app:srb_isIndicator="false"
+        app:srb_numberOfStars="5"
+        app:srb_starBackgroundColor="#9F9FA8"
+        app:srb_starSize="56dp"
+        app:srb_starsSeparation="4dp"
+        app:srb_stepSize="0.01" />
+
+    <EditText
+        android:id="@+id/editTextShowName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ratingBar"
+        android:hint="@string/Show_Name"
+        android:maxLength="100"
+        android:padding="12dp" />
+
+    <EditText
+        android:id="@+id/editTextShowGrade"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextShowName"
+        android:layout_marginTop="8dp"
+        android:hint="@string/grade_hint"
+        android:inputType="numberDecimal"
+        android:maxLength="5"
+        android:padding="12dp" />
+
+    <Button
+        android:id="@+id/submitShow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextShowGrade"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:text="Save"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+</RelativeLayout>
