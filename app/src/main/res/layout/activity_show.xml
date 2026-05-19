@@ -117,6 +117,17 @@
                     android:text="Tap to change image"
                     android:textColor="#FFFFFF"
                     android:textSize="14sp" />
+
+                <ImageButton
+                    android:id="@+id/buttonLinkImage"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_menu_search"
+                    android:contentDescription="Add image from URL"
+                    app:tint="#FFFFFF" />
             </androidx.cardview.widget.CardView>
 
             <com.iarcuschin.simpleratingbar.SimpleRatingBar

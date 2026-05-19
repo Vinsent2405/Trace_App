@@ -196,7 +196,7 @@ public class RankActivity extends AppCompatActivity implements OnDialogCloseList
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
         
-        // Theme Searchview
+        // Theme SearchView
         SharedPreferences prefs = getSharedPreferences("ThemePrefs", MODE_PRIVATE);
         int userTextColor = prefs.getInt("text_color", Color.WHITE);
 
