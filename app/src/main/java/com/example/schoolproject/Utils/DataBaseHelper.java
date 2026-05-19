@@ -234,11 +234,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     //Retrieves a single show model by its ID
     public ShowModel getShowById(int showId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = null;
-        try {
-            //Queries the show table for a specific ID
-            cursor = db.query(SHOW_TABLE, null, SHOW_COL_ID + " = ?", new String[]{String.valueOf(showId)}, null, null, null);
-            if (cursor.moveToFirst()) {
+        try (Cursor cursor = db.query(SHOW_TABLE, null, SHOW_COL_ID + " = ?", new String[]{String.valueOf(showId)}, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
                 ShowModel showModel = new ShowModel();
                 //Extracts values from the result cursor
                 showModel.setId(cursor.getInt(cursor.getColumnIndexOrThrow(SHOW_COL_ID)));
@@ -249,8 +246,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 showModel.setImagePath(cursor.getString(cursor.getColumnIndexOrThrow(SHOW_COL_IMAGE_PATH)));
                 return showModel;
             }
-        } finally {
-            if (cursor != null) cursor.close();
         }
         return null;
     }

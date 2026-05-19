@@ -242,6 +242,12 @@ public class RankActivity extends AppCompatActivity implements OnDialogCloseList
             startActivity(intent);
             return true;
         }
+        //Handles navigation to settings
+        if (item.getItemId() == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        }
         //Handles showing filter help dialog
         if (item.getItemId() == R.id.action_filter_info) {
             showFilterHelpDialog();

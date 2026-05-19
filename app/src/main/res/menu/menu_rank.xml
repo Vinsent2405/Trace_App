@@ -17,4 +17,8 @@
         android:title="Manage Tags"
         android:icon="@android:drawable/ic_menu_edit"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:title="Settings"
+        app:showAsAction="never" />
 </menu>

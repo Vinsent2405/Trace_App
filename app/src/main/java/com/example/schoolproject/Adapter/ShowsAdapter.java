@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.schoolproject.AddNewShow;
 import com.example.schoolproject.Model.ShowModel;
 import com.example.schoolproject.R;
 import com.example.schoolproject.RankActivity;
@@ -26,6 +25,7 @@ import com.google.android.material.chip.ChipGroup;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> {
@@ -82,23 +82,53 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
 
         //Handles dynamic tag generation as chips
         holder.tagGroup.removeAllViews();
+        holder.tagEllipsis.setVisibility(View.GONE);
         String tags = showModel.getTags();
         if (tags != null && !tags.isEmpty()) {
             String[] tagArray = tags.split(",");
-            boolean hasTags = false;
+            List<String> tagList = new ArrayList<>();
             for (String tag : tagArray) {
                 String trimmedTag = tag.trim();
                 if (!trimmedTag.isEmpty()) {
-                    hasTags = true;
+                    tagList.add(trimmedTag);
+                }
+            }
+
+            if (!tagList.isEmpty()) {
+                // Sort tags by length (shortest first)
+                tagList.sort(Comparator.comparingInt(String::length));
+
+                // Initial limit. We'll refine this.
+                int maxDisplayCount = 3; 
+                List<String> displayTags = new ArrayList<>();
+                int totalChars = 0;
+                int maxChars = 30; // Rough estimate of what fits on one line with chips
+
+                for (String tag : tagList) {
+                    if (displayTags.size() < maxDisplayCount && (totalChars + tag.length() < maxChars)) {
+                        displayTags.add(tag);
+                        totalChars += tag.length();
+                    } else {
+                        break;
+                    }
+                }
+
+                boolean hasMore = tagList.size() > displayTags.size();
+
+                for (String trimmedTag : displayTags) {
                     Chip chip = new Chip(getContext(), null, com.google.android.material.R.attr.chipStyle);
                     chip.setText(trimmedTag);
                     chip.setEnsureMinTouchTargetSize(false);
-                    chip.setTextSize(12f); // Slightly bigger text
-                    chip.setChipStartPadding(10f);
-                    chip.setChipEndPadding(10f);
+                    chip.setTextSize(10f); // Slightly smaller to fit better
+                    chip.setChipStartPadding(8f);
+                    chip.setChipEndPadding(8f);
                     chip.setClickable(false);
                     chip.setCheckable(false);
                     
+                    // Handle long tags: Ellipsize and limit maxWidth
+                    chip.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                    chip.setMaxWidth(250); // Reduced max width
+
                     // Determines contrast color
                     int oppositeColor = isColorDark(secondaryColor) ? Color.WHITE : Color.BLACK;
 
@@ -110,8 +140,16 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
                     
                     holder.tagGroup.addView(chip);
                 }
+                
+                if (hasMore) {
+                    holder.tagEllipsis.setVisibility(View.VISIBLE);
+                    holder.tagEllipsis.setTextColor(isColorDark(secondaryColor) ? Color.WHITE : Color.BLACK);
+                } else {
+                    holder.tagEllipsis.setVisibility(View.GONE);
+                }
+            } else {
+                holder.tagGroup.setVisibility(View.GONE);
             }
-            holder.tagGroup.setVisibility(hasTags ? View.VISIBLE : View.GONE);
         } else {
             holder.tagGroup.setVisibility(View.GONE);
         }
@@ -296,6 +334,7 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
         TextView textViewTitle;
         SimpleRatingBar ratingBar;
         ChipGroup tagGroup;
+        TextView tagEllipsis;
         RelativeLayout relativeLayout;
         CardView cardView;
 
@@ -304,6 +343,7 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
             textViewTitle = view.findViewById(R.id.User_Name);
             ratingBar = view.findViewById(R.id.itemRatingBar);
             tagGroup = view.findViewById(R.id.tagGroup);
+            tagEllipsis = view.findViewById(R.id.tagEllipsis);
             relativeLayout = view.findViewById(R.id.rank_layout);
             cardView = view.findViewById(R.id.cardView);
         }
