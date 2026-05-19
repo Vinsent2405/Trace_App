@@ -9,10 +9,12 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -20,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -53,6 +56,7 @@ import java.util.Locale;
 
 public class ShowActivity extends AppCompatActivity {
 
+    private static final String TAG = "ShowActivity";
     private TextInputEditText editTextName, editTextGrade, editTextDescription;
     private SimpleRatingBar ratingBar;
     private Button buttonSave;
@@ -100,6 +104,14 @@ public class ShowActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
+        // Setup Back Pressed Callback (replacement for deprecated onBackPressed)
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();
+            }
+        });
+
         //Initializes the database helper
         dataBaseHelper = new DataBaseHelper(this);
         //Updates the user level badge
@@ -116,11 +128,9 @@ public class ShowActivity extends AppCompatActivity {
         ImageButton buttonLinkImage = findViewById(R.id.buttonLinkImage);
 
         //Sets up image picker on image card click
-        findViewById(R.id.cardShowImage).setOnClickListener(v -> {
-            pickMedia.launch(new PickVisualMediaRequest.Builder()
-                    .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                    .build());
-        });
+        findViewById(R.id.cardShowImage).setOnClickListener(v -> pickMedia.launch(new PickVisualMediaRequest.Builder()
+                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                .build()));
 
         //Sets up URL image downloader
         buttonLinkImage.setOnClickListener(v -> showUrlInputDialog());
@@ -249,11 +259,12 @@ public class ShowActivity extends AppCompatActivity {
         return darkness >= 0.5;
     }
 
-    //Refreshes the theme when activity resumes
+    //Refreshes the theme and tags when activity resumes
     @Override
     protected void onResume() {
         super.onResume();
         applyTheme();
+        loadShowTags();
     }
 
     //Loads all tags associated with the current show
@@ -302,7 +313,8 @@ public class ShowActivity extends AppCompatActivity {
     //Displays a custom styled toast message
     private void showCustomToast(String message) {
         LayoutInflater inflater = getLayoutInflater();
-        View layout = inflater.inflate(R.layout.custom_toast, null);
+        ViewGroup root = findViewById(R.id.main);
+        View layout = inflater.inflate(R.layout.custom_toast, root, false);
 
         TextView text = layout.findViewById(R.id.custom_toast_text);
         text.setText(message);
@@ -315,9 +327,9 @@ public class ShowActivity extends AppCompatActivity {
 
     //Saves the modified show data to the database
     private void saveChanges() {
-        String name = editTextName.getText().toString().trim();
-        String gradeStr = editTextGrade.getText().toString().trim();
-        String description = editTextDescription.getText().toString().trim();
+        String name = editTextName.getText() != null ? editTextName.getText().toString().trim() : "";
+        String gradeStr = editTextGrade.getText() != null ? editTextGrade.getText().toString().trim() : "";
+        String description = editTextDescription.getText() != null ? editTextDescription.getText().toString().trim() : "";
 
         //Validates input fields
         if (name.isEmpty() || gradeStr.isEmpty()) {
@@ -350,23 +362,28 @@ public class ShowActivity extends AppCompatActivity {
 
     // Displays a dialog to input an image URL
     private void showUrlInputDialog() {
+        AlertDialog.Builder builder = createUrlInputDialogBuilder();
+        builder.show();
+    }
+
+    private AlertDialog.Builder createUrlInputDialogBuilder() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Import Image from URL");
-        
+
         final EditText input = new EditText(this);
         input.setHint("Paste image link here...");
         input.setPadding(50, 40, 50, 40);
         builder.setView(input);
 
         builder.setPositiveButton("Download", (dialog, which) -> {
-            String url = input.getText().toString().trim();
+            String url = input.getText() != null ? input.getText().toString().trim() : "";
             if (!url.isEmpty()) {
                 downloadImageFromUrl(url);
             }
         });
-        
+
         builder.setNeutralButton("Search on Google", (dialog, which) -> {
-            String showName = editTextName.getText().toString().trim();
+            String showName = editTextName.getText() != null ? editTextName.getText().toString().trim() : "";
             if (showName.isEmpty()) {
                 showName = "show";
             }
@@ -376,8 +393,7 @@ public class ShowActivity extends AppCompatActivity {
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-
-        builder.show();
+        return builder;
     }
 
     // Downloads image from URL and saves it locally
@@ -425,7 +441,7 @@ public class ShowActivity extends AppCompatActivity {
             
             showCustomToast("Image saved successfully!");
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error saving bitmap to internal storage", e);
             showCustomToast("Error saving image.");
         }
     }
@@ -455,7 +471,7 @@ public class ShowActivity extends AppCompatActivity {
 
             return file.getAbsolutePath();
         } catch (java.io.IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error copying image to internal storage", e);
             return null;
         }
     }
@@ -487,7 +503,7 @@ public class ShowActivity extends AppCompatActivity {
     //Handles back button navigation in toolbar
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
+        getOnBackPressedDispatcher().onBackPressed();
         return true;
     }
 }

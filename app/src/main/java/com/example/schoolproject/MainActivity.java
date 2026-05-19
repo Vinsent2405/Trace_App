@@ -159,6 +159,11 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
     @Override
     protected void onResume() {
         super.onResume();
+        // Refresh data from DB
+        listModels = dataBaseHelper.getAllLists();
+        java.util.Collections.reverse(listModels);
+        adapter.setListModels(listModels);
+
         applyTheme();
         updateUserLevel();
         if (adapter != null) {

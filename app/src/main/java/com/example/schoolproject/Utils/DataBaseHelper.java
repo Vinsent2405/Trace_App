@@ -44,9 +44,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String SHOW_TAG_COL_SHOW_ID = "SHOW_ID";
     public static final String SHOW_TAG_COL_TAG_ID = "TAG_ID";
 
+    private static DataBaseHelper instance;
+
     //Constructor for the database helper
     public DataBaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    public static synchronized DataBaseHelper getInstance(Context context) {
+        if (instance == null) {
+            instance = new DataBaseHelper(context.getApplicationContext());
+        }
+        return instance;
     }
 
     //Initializes the database tables on first creation
