@@ -95,17 +95,21 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
             }
 
             if (!tagList.isEmpty()) {
+                holder.tagRow.setVisibility(View.VISIBLE);
+                holder.tagGroup.setVisibility(View.VISIBLE);
+
                 // Sort tags by length (shortest first)
                 tagList.sort(Comparator.comparingInt(String::length));
 
-                // Initial limit. We'll refine this.
+                // Display logic: show up to 3 tags, total around 40 chars
                 int maxDisplayCount = 3; 
                 List<String> displayTags = new ArrayList<>();
                 int totalChars = 0;
-                int maxChars = 30; // Rough estimate of what fits on one line with chips
+                int maxChars = 40; 
 
                 for (String tag : tagList) {
-                    if (displayTags.size() < maxDisplayCount && (totalChars + tag.length() < maxChars)) {
+                    // Always add the first tag regardless of length to avoid empty tag group
+                    if (displayTags.isEmpty() || (displayTags.size() < maxDisplayCount && (totalChars + tag.length() < maxChars))) {
                         displayTags.add(tag);
                         totalChars += tag.length();
                     } else {
@@ -127,7 +131,7 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
                     
                     // Handle long tags: Ellipsize and limit maxWidth
                     chip.setEllipsize(android.text.TextUtils.TruncateAt.END);
-                    chip.setMaxWidth(250); // Reduced max width
+                    chip.setMaxWidth(300); // Increased max width slightly
 
                     // Determines contrast color
                     int oppositeColor = isColorDark(secondaryColor) ? Color.WHITE : Color.BLACK;
@@ -144,14 +148,12 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
                 if (hasMore) {
                     holder.tagEllipsis.setVisibility(View.VISIBLE);
                     holder.tagEllipsis.setTextColor(isColorDark(secondaryColor) ? Color.WHITE : Color.BLACK);
-                } else {
-                    holder.tagEllipsis.setVisibility(View.GONE);
                 }
             } else {
-                holder.tagGroup.setVisibility(View.GONE);
+                holder.tagRow.setVisibility(View.GONE);
             }
         } else {
-            holder.tagGroup.setVisibility(View.GONE);
+            holder.tagRow.setVisibility(View.GONE);
         }
     }
 
@@ -335,6 +337,7 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
         SimpleRatingBar ratingBar;
         ChipGroup tagGroup;
         TextView tagEllipsis;
+        View tagRow;
         RelativeLayout relativeLayout;
         CardView cardView;
 
@@ -344,6 +347,7 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
             ratingBar = view.findViewById(R.id.itemRatingBar);
             tagGroup = view.findViewById(R.id.tagGroup);
             tagEllipsis = view.findViewById(R.id.tagEllipsis);
+            tagRow = view.findViewById(R.id.tagRow);
             relativeLayout = view.findViewById(R.id.rank_layout);
             cardView = view.findViewById(R.id.cardView);
         }
