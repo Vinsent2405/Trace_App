@@ -3,6 +3,7 @@ package com.example.schoolproject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -189,11 +190,21 @@ public class AddNewShow extends BottomSheetDialogFragment {
                 int id = getArguments().getInt("id");
                 showModel.setId(id);
                 dataBaseHelper.updateShow(showModel);
+                dismiss();
             } else {
-                dataBaseHelper.insertShow(showModel, listId);
+                long newId = dataBaseHelper.insertShow(showModel, listId);
+                
+                // Open ShowActivity for the newly created show
+                if (newId != -1) {
+                    Intent intent = new Intent(getContext(), ShowActivity.class);
+                    intent.putExtra("id", (int) newId);
+                    intent.putExtra("name", name);
+                    intent.putExtra("grade", grade);
+                    intent.putExtra("description", ""); // New shows start with no description
+                    startActivity(intent);
+                }
+                dismiss();
             }
-
-            dismiss();
         });
     }
 
