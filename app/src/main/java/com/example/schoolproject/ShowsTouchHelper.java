@@ -60,6 +60,8 @@ public class ShowsTouchHelper extends ItemTouchHelper.SimpleCallback {
         } else {
             // Swipe Left triggers full edit activity
             adapter.openShowActivity(position);
+            // Notify the adapter that the item has changed to reset the swipe state (the green background)
+            adapter.notifyItemChanged(position);
         }
     }
 

@@ -21,6 +21,7 @@ import com.example.schoolproject.ShowExpandedFragment;
 import com.example.schoolproject.Utils.DataBaseHelper;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -260,6 +261,19 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
     //Deletes a show from the database and updates the recycler view
     public void deleteShow(int position) {
         ShowModel showModel = showModels.get(position);
+        
+        // Clean up the associated image file from internal storage
+        String imagePath = showModel.getImagePath();
+        if (imagePath != null && !imagePath.isEmpty()) {
+            File imageFile = new File(imagePath);
+            // Only delete if it's in our app's internal storage to be safe
+            if (imageFile.exists() && imagePath.contains(getContext().getFilesDir().getAbsolutePath())) {
+                if (imageFile.delete()) {
+                    android.util.Log.d("ShowsAdapter", "Deleted orphan image file: " + imagePath);
+                }
+            }
+        }
+
         dataBaseHelper.deleteShow(showModel.getId());
 
         showModelsFull.remove(showModel);
