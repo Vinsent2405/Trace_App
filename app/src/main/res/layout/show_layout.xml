@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -9,82 +10,65 @@
     app:cardCornerRadius="8dp"
     app:cardElevation="5dp">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rank_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="84dp"
         android:background="@android:color/transparent"
         android:clickable="true"
         android:focusable="true"
         android:foreground="?attr/selectableItemBackground"
         android:padding="8dp">
 
-        <LinearLayout
-            android:id="@+id/top_row"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/User_Name"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/Show_Name"
+            android:textColor="@android:color/black"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/tagTextView"
+            app:layout_constraintEnd_toStartOf="@+id/itemRatingBar"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
 
-            <TextView
-                android:id="@+id/User_Name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="@string/Show_Name"
-                android:textColor="@android:color/black"
-                android:textSize="24sp" />
-
-            <com.iarcuschin.simpleratingbar.SimpleRatingBar
-                android:id="@+id/itemRatingBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                app:srb_borderColor="#00FFC107"
-                app:srb_drawBorderEnabled="true"
-                app:srb_fillColor="#FFFFFF"
-                app:srb_isIndicator="true"
-                app:srb_numberOfStars="5"
-                app:srb_starBackgroundColor="#9F9FA8"
-                app:srb_starSize="36dp"
-                app:srb_starsSeparation="4dp"
-                app:srb_stepSize="0.01" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/tagRow"
-            android:layout_width="match_parent"
+        <com.iarcuschin.simpleratingbar.SimpleRatingBar
+            android:id="@+id/itemRatingBar"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/top_row"
-            android:layout_marginTop="4dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingEnd="40dp">
+            app:layout_constraintBottom_toBottomOf="@+id/User_Name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/User_Name"
+            app:srb_borderColor="#00FFC107"
+            app:srb_drawBorderEnabled="true"
+            app:srb_fillColor="#FFFFFF"
+            app:srb_isIndicator="true"
+            app:srb_numberOfStars="5"
+            app:srb_starBackgroundColor="#9F9FA8"
+            app:srb_starSize="32dp"
+            app:srb_starsSeparation="2dp"
+            app:srb_stepSize="0.01" />
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/tagGroup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:chipSpacingHorizontal="4dp"
-                app:chipSpacingVertical="0dp"
-                app:singleLine="true" />
+        <TextView
+            android:id="@+id/tagTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="#E0E0E0"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/User_Name"
+            tools:text="Action, Comedy, Romance, Drama" />
 
-            <TextView
-                android:id="@+id/tagEllipsis"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:gravity="center"
-                android:text="..."
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
-        </LinearLayout>
-
-    </RelativeLayout>
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

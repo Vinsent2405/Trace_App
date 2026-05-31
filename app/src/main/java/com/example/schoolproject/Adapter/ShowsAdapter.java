@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,8 +19,6 @@ import com.example.schoolproject.RankActivity;
 import com.example.schoolproject.ShowActivity;
 import com.example.schoolproject.ShowExpandedFragment;
 import com.example.schoolproject.Utils.DataBaseHelper;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
 import java.util.ArrayList;
@@ -40,6 +37,12 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
     public ShowsAdapter(DataBaseHelper dataBaseHelper,  RankActivity rankActivity) {
         this.dataBaseHelper = dataBaseHelper;
         this.rankActivity = rankActivity;
+        setHasStableIds(true);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return showModels.get(position).getId();
     }
 
 
@@ -80,87 +83,30 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
             fragment.show(rankActivity.getSupportFragmentManager(), ShowExpandedFragment.TAG);
         });
 
-        //Handles dynamic tag generation as chips
-        holder.tagGroup.removeAllViews();
-        holder.tagEllipsis.setVisibility(View.GONE);
+        // Simplified tag display to prevent jitter
         String tags = showModel.getTags();
         if (tags != null && !tags.isEmpty()) {
             String[] tagArray = tags.split(",");
-            List<String> tagList = new ArrayList<>();
+            StringBuilder sb = new StringBuilder();
+            int count = 0;
             for (String tag : tagArray) {
-                String trimmedTag = tag.trim();
-                if (!trimmedTag.isEmpty()) {
-                    tagList.add(trimmedTag);
+                String trimmed = tag.trim();
+                if (!trimmed.isEmpty()) {
+                    if (sb.length() > 0) sb.append(" | ");
+                    sb.append(trimmed);
+                    count++;
                 }
             }
-
-            if (!tagList.isEmpty()) {
-                holder.tagRow.setVisibility(View.VISIBLE);
-                holder.tagGroup.setVisibility(View.VISIBLE);
-
-                // Sort tags by length (shortest first)
-                tagList.sort(Comparator.comparingInt(String::length));
-
-                // Display logic: show up to 3 tags, total around 40 chars
-                int maxDisplayCount = 3; 
-                List<String> displayTags = new ArrayList<>();
-                int totalChars = 0;
-                int maxChars = 40; 
-
-                for (String tag : tagList) {
-                    // Always add the first tag regardless of length to avoid empty tag group
-                    if (displayTags.isEmpty() || (displayTags.size() < maxDisplayCount && (totalChars + tag.length() < maxChars))) {
-                        displayTags.add(tag);
-                        totalChars += tag.length();
-                    } else {
-                        break;
-                    }
-                }
-
-                boolean hasMore = tagList.size() > displayTags.size();
-
-                for (String trimmedTag : displayTags) {
-                    Chip chip = new Chip(getContext(), null, com.google.android.material.R.attr.chipStyle);
-                    chip.setText(trimmedTag);
-                    chip.setEnsureMinTouchTargetSize(false);
-                    chip.setTextSize(10f); // Slightly smaller to fit better
-                    chip.setChipStartPadding(8f);
-                    chip.setChipEndPadding(8f);
-                    chip.setClickable(false);
-                    chip.setCheckable(false);
-                    
-                    // Handle long tags: Ellipsize and limit maxWidth
-                    chip.setEllipsize(android.text.TextUtils.TruncateAt.END);
-                    chip.setMaxWidth(300); // Increased max width slightly
-
-                    // Determines contrast color
-                    int oppositeColor = isColorDark(secondaryColor) ? Color.WHITE : Color.BLACK;
-
-                    // Styles the chip
-                    chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(secondaryColor));
-                    chip.setChipStrokeColor(android.content.res.ColorStateList.valueOf(oppositeColor));
-                    chip.setChipStrokeWidth(2f);
-                    chip.setTextColor(oppositeColor);
-                    
-                    holder.tagGroup.addView(chip);
-                }
-                
-                if (hasMore) {
-                    holder.tagEllipsis.setVisibility(View.VISIBLE);
-                    holder.tagEllipsis.setTextColor(isColorDark(secondaryColor) ? Color.WHITE : Color.BLACK);
-                }
+            if (count > 0) {
+                holder.tagTextView.setText(sb.toString());
+                holder.tagTextView.setVisibility(View.VISIBLE);
+                holder.tagTextView.setTextColor(Color.argb(200, Color.red(userTextColor), Color.green(userTextColor), Color.blue(userTextColor)));
             } else {
-                holder.tagRow.setVisibility(View.GONE);
+                holder.tagTextView.setVisibility(View.GONE);
             }
         } else {
-            holder.tagRow.setVisibility(View.GONE);
+            holder.tagTextView.setVisibility(View.GONE);
         }
-    }
-
-    //Helper method to detect dark colors
-    private boolean isColorDark(int color) {
-        double darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
-        return darkness >= 0.5;
     }
 
     //Returns the rank activity context
@@ -335,19 +281,15 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textViewTitle;
         SimpleRatingBar ratingBar;
-        ChipGroup tagGroup;
-        TextView tagEllipsis;
-        View tagRow;
-        RelativeLayout relativeLayout;
+        TextView tagTextView;
+        View relativeLayout;
         CardView cardView;
 
         public ViewHolder(View view) {
             super(view);
             textViewTitle = view.findViewById(R.id.User_Name);
             ratingBar = view.findViewById(R.id.itemRatingBar);
-            tagGroup = view.findViewById(R.id.tagGroup);
-            tagEllipsis = view.findViewById(R.id.tagEllipsis);
-            tagRow = view.findViewById(R.id.tagRow);
+            tagTextView = view.findViewById(R.id.tagTextView);
             relativeLayout = view.findViewById(R.id.rank_layout);
             cardView = view.findViewById(R.id.cardView);
         }

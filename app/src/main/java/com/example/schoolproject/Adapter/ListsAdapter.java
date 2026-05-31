@@ -35,6 +35,12 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ViewHolder> 
     public ListsAdapter(DataBaseHelper dataBaseHelper,  MainActivity mainActivity) {
         this.dataBaseHelper = dataBaseHelper;
         this.mainActivity = mainActivity;
+        setHasStableIds(true);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return listModels.get(position).getId();
     }
 
 

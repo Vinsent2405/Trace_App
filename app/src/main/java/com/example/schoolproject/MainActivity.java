@@ -196,6 +196,5 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
         listModels = dataBaseHelper.getAllLists();
         Collections.reverse(listModels);
         adapter.setListModels(listModels);
-        adapter.notifyDataSetChanged();
     }
 }
