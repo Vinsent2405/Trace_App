@@ -23,7 +23,6 @@ import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> {
@@ -180,17 +179,20 @@ public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> 
                 String name = item.getName().toLowerCase();
                 String itemTags = item.getTags() != null ? item.getTags().toLowerCase() : "";
                 
-                // Normalizes strings for matching
-                String normalizedName = name.replaceAll("[^a-z0-9]", "");
-                String normalizedItemTags = itemTags.replaceAll("[^a-z0-9]", "");
+                // Normalizes strings for matching (Unicode aware: \p{L} is any letter, \p{N} is any number)
+                String normalizedName = name.replaceAll("[^\\p{L}\\p{N}]", "");
+                String normalizedItemTags = itemTags.replaceAll("[^\\p{L}\\p{N}]", "");
 
                 for (String kw : keywords) {
                     if (kw.isEmpty()) continue;
-                    String normalizedKw = kw.replaceAll("[^a-z0-9]", "");
+                    String normalizedKw = kw.replaceAll("[^\\p{L}\\p{N}]", "");
 
                     // Substring and fuzzy matching
-                    boolean found = name.contains(kw) || itemTags.contains(kw) 
-                                    || normalizedName.contains(normalizedKw) || normalizedItemTags.contains(normalizedKw);
+                    boolean found = name.contains(kw) || itemTags.contains(kw);
+                    
+                    if (!found && !normalizedKw.isEmpty()) {
+                        found = normalizedName.contains(normalizedKw) || normalizedItemTags.contains(normalizedKw);
+                    }
                     
                     if (!found) {
                         found = isFuzzyMatch(kw, name) || isFuzzyMatch(kw, itemTags);
